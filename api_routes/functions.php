@@ -42,7 +42,7 @@ function loginUser($email, $password)
     // echo 'login user <br>';
     // echo empty(trim($email)), empty(trim($password));
     if (empty(trim($email)) or empty(trim($password)))
-    die("Authentication failed: Invalid Credentials <a style='cursor:pointer' onclick='event.preventDefault();history.back()'>Go back</a>");
+        die("Authentication failed: Credentials Required <a style='cursor:pointer' onclick='event.preventDefault();history.back()'>Go back</a>");
 
     else if ($foundUser = userExists($email, $password)) {
         authenticateUser($foundUser);
@@ -65,13 +65,14 @@ function userExists($email, $password)
     $sql = "SELECT email,password FROM users WHERE email = '$email' ";
     $resObj = $conn->query($sql);
     if ($resObj->num_rows > 0) {
-        $user = $resObj->fetch_assoc();
+        if ($user = $resObj->fetch_assoc())  echo 'user found';
 
         // confirm user email and password match
-        if ($user = $resObj->fetch_assoc() and password_verify($password, $user['password']))  return $user;
-        die("Authentication failed: Invalid Credentials <a href='' style='cursor:pointer' onclick='event.preventDefault();history.back()'>Go back</a>");
+        if ($user and password_verify($password, $user['password']))  return $user;
+
+        die("<br>Authentication failed: Invalid Credentials Provided <a href='' style='cursor:pointer' onclick='event.preventDefault();history.back()'>Go back</a>");
     } else {
-        die("Authentication failed: Invalid Credentials <a href='' style='cursor:pointer' onclick='event.preventDefault();history.back()'>Go back</a>");
+        die("<br> Authentication failed: No match found <a href='' style='cursor:pointer' onclick='event.preventDefault();history.back()'>Go back</a>");
     }
     $conn->close();
 }
